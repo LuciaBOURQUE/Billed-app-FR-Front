@@ -19,8 +19,10 @@ const row = (bill) => {
     `)
   }
 
+// On trie (décroissant) ici le tableau des factures par date
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  const antiChrono = (a, b) => ((new Date(a.date) > new Date(b.date)) ? 1 : -1);
+  return (data && data.length) ? data.sort(antiChrono).map(bill => row(bill)).join("") : ""
 }
 
 export default ({ data: bills, loading, error }) => {

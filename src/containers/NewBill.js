@@ -15,6 +15,7 @@ export default class NewBill {
     this.billId = null
     new Logout({ document, localStorage, onNavigate })
   }
+  
   handleChangeFile = e => {
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
@@ -22,7 +23,16 @@ export default class NewBill {
     const fileName = filePath[filePath.length-1]
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
+
+    if (file.type == "image/jpeg" || file.type == "image/jpg" || file.type == "image/png" ) {
+      formData.append('file', file)
+      console.log(formData)
+      $(`.error-file`).css({display : "none"})
+    } else {
+      $(`.error-file`).css({display : "block"})
+      this.document.querySelector(`input[data-testid="file"]`).value = ""
+      return this.handleChangeFile
+    }
     formData.append('email', email)
 
     this.store
