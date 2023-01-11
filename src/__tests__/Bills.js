@@ -11,7 +11,7 @@ import {localStorageMock} from "../__mocks__/localStorage.js";
 // Ajout
 import Bills from "../containers/Bills.js";
 import mockStore from "../__mocks__/store";
-import router from "../app/Router.js"; // Qu'est-ce que c'est ?
+import router from "../app/Router.js";
 jest.mock("../app/Store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
@@ -83,11 +83,11 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-// Faire un test d'intégration GET (asynchrone)
+// Faire un test d'intégration GET
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then fetches bills from mock API GET", async () => { // Ensuite, il devrait récupérer les factures l'API simulée GET
-      const bills = new Bills ({ document, store:mockStore, localStorage:window.localStorage}); // On récupère les factures dans le Store
+      const bills = new Bills ({ document, onNavigate, store:mockStore, localStorage:window.localStorage}); // On récupère les factures dans le store
 
       const getBills = jest.fn(() => bills.getBills()); // On vient chercher la fonction qui récupère la liste des factures
       const value = await getBills(); // Vérification

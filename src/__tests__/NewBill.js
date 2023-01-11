@@ -67,7 +67,7 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))
       const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
-      const newBill = new NewBill ({ document, onNavigate, store: mockStore, localStorage:localStorage })
+      const newBill = new NewBill ({ document, onNavigate, store:mockStore, localStorage:localStorage })
   
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e)) //On vient chercher la fonction qui génère le type de fichier
       const inputFile = screen.getByTestId("file");
@@ -94,16 +94,15 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
 })
 
 
-// 2) Faire un test d'intégration POST (asynchrone)
+// 2) Faire un test d'intégration POST
 describe("Given I am connected as an employee and I am on NewBill Page", () => {
   describe("When I submit the form completed", () => {
     test("Then, the bill is created and it should renders Login page", async () => { // on met ici un async() - asynchrone
-      // 2) Scénario X
       document.body.innerHTML = NewBillUI() // Asynchrone: 1er étape - On récupère la structure HTML de la page
       Object.defineProperty(window, 'localStorage', { value: localStorageMock }) // On simulation de connexion d'un employée
       window.localStorage.setItem('user', JSON.stringify({type: 'Employee', email: 'azerty@email.com',}))
       const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
-      const newBill = new NewBill ({ document, onNavigate, store: null, localStorage: window.localStorage,}) // Qu'est-ce que le "store: null" ? - Simulation de la création de la page facture
+      const newBill = new NewBill ({ document, onNavigate, store: null, localStorage: window.localStorage,}) // Simulation de la création de la page facture
       
       // On simule ici des données dans les champs input
       const dataFileBills = {
@@ -130,14 +129,14 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
       newBill.fileName = dataFileBills.fileName;
       newBill.fileUrl = dataFileBills.fileUrl;
 
-      newBill.updateBill = jest.fn();//SIMULATION DE  CLICK
+      newBill.updateBill = jest.fn();
       const handleSubmit = jest.fn((e) => newBill.handleSubmit(e)) // On vient chercher la fonction de l'envoie du formulaire
 
       const formNewBill = screen.getByTestId("form-new-bill");
-      formNewBill.addEventListener("submit", handleSubmit) //On simule la fonction de l'envoie du formulaire
+      formNewBill.addEventListener("submit", handleSubmit) // On simule la fonction de l'envoie du formulaire
       fireEvent.submit(formNewBill); // On vérifie si le formulaire a été envoyé
       expect(handleSubmit).toHaveBeenCalled() // On regarde ici si la fonction event 'handleClickIconEye' a bien été appelé
-      expect(newBill.updateBill).toHaveBeenCalled()//VERIFIE SI LE FORMULAIRE EST ENVOYER DANS LE STORE
+      expect(newBill.updateBill).toHaveBeenCalled() // VERIFIE SI LE FORMULAIRE EST ENVOYER DANS LE STORE
     })
   })
 
