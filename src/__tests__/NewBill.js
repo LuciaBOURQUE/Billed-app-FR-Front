@@ -7,9 +7,10 @@ import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 
 // Ajout
-import { ROUTES } from "../constants/routes"
+import { ROUTES, ROUTES_PATH } from "../constants/routes" //Ajout de ROUTES-PATH - Chemin de test
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store.js" 
+import router from "../app/Router.js";
 
 describe("Given I am connected as an employee and I am on NewBill Page", () => {
   describe("When I click on submit button and I do not fill in the required fields of the form", () => {
@@ -129,14 +130,48 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
       newBill.fileName = dataFileBills.fileName;
       newBill.fileUrl = dataFileBills.fileUrl;
 
-      newBill.updateBill = jest.fn();//SIMULATION DE  CLICK - PAS COMPRIS
+      newBill.updateBill = jest.fn();//SIMULATION DE  CLICK
       const handleSubmit = jest.fn((e) => newBill.handleSubmit(e)) // On vient chercher la fonction de l'envoie du formulaire
 
       const formNewBill = screen.getByTestId("form-new-bill");
       formNewBill.addEventListener("submit", handleSubmit) //On simule la fonction de l'envoie du formulaire
       fireEvent.submit(formNewBill); // On vérifie si le formulaire a été envoyé
       expect(handleSubmit).toHaveBeenCalled() // On regarde ici si la fonction event 'handleClickIconEye' a bien été appelé
-      expect(newBill.updateBill).toHaveBeenCalled()//VERIFIE SI LE FORMULAIRE EST ENVOYER DANS LE STORE - PAS COMPRIS
+      expect(newBill.updateBill).toHaveBeenCalled()//VERIFIE SI LE FORMULAIRE EST ENVOYER DANS LE STORE
     })
+  })
+
+  //test erreur 500
+  test('fetches error from an API and fails with 500 error', async () => { // récupère l'erreur d'une API et échoue avec l'erreur 500
+    jest.spyOn(mockStore, 'bills')
+    jest.spyOn(console, 'error').mockImplementation(() => {})// Prevent Console.error jest error
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+    Object.defineProperty(window, 'location', { value: { hash: ROUTES_PATH['NewBill'] } })
+
+    window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
+    document.body.innerHTML = `<div id="root"></div>`
+    router()
+
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname })
+    }
+
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+       update : () =>  {
+          return Promise.reject(new Error('Erreur 500'))
+        }
+      }
+    })
+    const newBill = new NewBill({document,  onNavigate, store: mockStore, localStorage: window.localStorage})
+  
+    // Soumettre le formulaire
+    const form = screen.getByTestId('form-new-bill')
+    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e))
+    form.addEventListener('submit', handleSubmit)     
+    fireEvent.submit(form)
+    await new Promise(process.nextTick)
+    expect(console.error).toBeCalled()
   })
 })

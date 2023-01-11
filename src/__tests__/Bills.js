@@ -46,12 +46,11 @@ describe("Given I am connected as an employee", () => {
     test("A modal should open", () => {
       // Scénario 4 - ligne 14 du fichier "Bills"(containers)
       document.body.innerHTML = BillsUI({ data: bills }) // On récupère ici le code HTML de la page pour interagir avec
-
-      Object.defineProperty(window, localStorage, { value: localStorageMock }) // On simule ici des données dans le localStorage
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock }) // On simule ici des données dans le localStorage
       window.localStorage.setItem('user', JSON.stringify({type: 'Employee'})) // On simule ici un utilisateur employé qui est connecté
       const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname })} // Navigation vers la route bills
-      const dashboard = new Bills({ document, onNavigate, store: null, localStorage:localStorage }) // On créer une facture
 
+      const dashboard = new Bills({ document, onNavigate, store: null, localStorage:localStorage }) // On créer une facture
       const handleClickIconEye = jest.fn(() => dashboard.handleClickIconEye) // On récupère la fonction event dans le fichier Bills
       const iconEye = screen.queryAllByTestId('icon-eye')[0];
       $.fn.modal = jest.fn(); // Mock de la modale qui permet d'afficher la modale - mais SAVOIR a quoi ça sert (test si on l'enlève)
@@ -74,7 +73,7 @@ describe("Given I am connected as an employee", () => {
       const dashboard = new Bills({ document, onNavigate, store: null, bills:bills, localStorage:localStorage })
 
       const handleClickNewBill = jest.fn(() => dashboard.handleClickNewBill);
-      const buttonNewBill = screen.getByTestId('btn-new-bill')
+      const buttonNewBill = screen.getByTestId('btn-new-bill');
 
       buttonNewBill.addEventListener('click', handleClickNewBill)
       fireEvent.click(buttonNewBill);
@@ -86,9 +85,9 @@ describe("Given I am connected as an employee", () => {
 
 // Faire un test d'intégration GET (asynchrone)
 describe("Given I am connected as an employee", () => {
-  describe("When I get bills", () => { // Quand je demande de récupérer des factures
-    test("Then it should render bills", async () => { // Ensuite, il devrait afficher les factures
-      const bills = new Bills ({ document, onNavigate, store:mockStore, localStorage:window.localStorage}); // On récupère les factures dans le Store
+  describe("When I am on Bills Page", () => {
+    test("Then fetches bills from mock API GET", async () => { // Ensuite, il devrait récupérer les factures l'API simulée GET
+      const bills = new Bills ({ document, store:mockStore, localStorage:window.localStorage}); // On récupère les factures dans le Store
 
       const getBills = jest.fn(() => bills.getBills()); // On vient chercher la fonction qui récupère la liste des factures
       const value = await getBills(); // Vérification
@@ -98,8 +97,8 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-  // Test erreur
-  describe("When an error occurs on API", () => { //Lorsqu'une erreur se produit sur l'API
+  // Test erreur 404
+  describe("When an error occurs on API", () => { // Lorsqu'une erreur se produit sur l'API
     beforeEach(() => {
       jest.spyOn(mockStore, 'bills')
       Object.defineProperty(window, 'localStorage', {
@@ -118,8 +117,8 @@ describe("Given I am connected as an employee", () => {
       router()
     })
   
-    test("Then i fetch the invoices in the api and it fails with a 404 error", async () => {//Ensuite, je récupère les factures dans l'api et cela échoue avec une erreur 404
-      mockStore.bills.mockImplementationOnce(() => {//changement du comportement pour générer une erreur
+    test("Then I fetch the invoices in the API and it fails with a 404 error", async () => { // Ensuite, je récupère les factures dans l'api et cela échoue avec une erreur 404
+      mockStore.bills.mockImplementationOnce(() => { // Changement du comportement pour générer une erreur
         return {
           list: () => {
             return Promise.reject(new Error("Erreur 404"))
