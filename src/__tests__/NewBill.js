@@ -48,10 +48,8 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
       const inputFile = screen.getByTestId("file"); //cible le champ fichier
 
-      // Je fais ici une simulation d'un mauvais fichier ????
-      const testFormat = new File (["c'est un test"],"document.txt", { // condition du test
-        type: "document/txt"
-      })
+      // Je fais ici une simulation d'un mauvais fichier - condition du test
+      const testFormat = new File (["c'est un test"],"document.txt", {type: "document/txt"})
 
       inputFile.addEventListener("change", handleChangeFile)
       fireEvent.change(inputFile, { target: {files: [testFormat]}}); //évènement au change en relation avec la condition du test
@@ -62,18 +60,18 @@ describe("Given I am connected as an employee and I am on NewBill Page", () => {
 
   describe("When I chose the good file choice (accepted: .jpg, .jpeg or .png)", () => {
     test("Then, the bill is sent", () => {
-      // 3) Scénario X
+      // 3) Scénario 8
       document.body.innerHTML = NewBillUI()
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))
       const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
       const newBill = new NewBill ({ document, onNavigate, store:mockStore, localStorage:localStorage })
   
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e)) //On vient chercher la fonction qui génère le type de fichier
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
       const inputFile = screen.getByTestId("file");
-      const testFormat = new File(["c'est un test"],  "test.jpg", { // condition du test - Je fais ici une simulation d'un bon fichier
-        type: "image/jpg"
-      })
+
+      // Je fais ici une simulation d'un bon fichier - condition du test
+      const testFormat = new File(["c'est un test"],  "test.jpg", {type: "image/jpg"})
   
       inputFile.addEventListener("change", handleChangeFile)
       fireEvent.change(inputFile, { target: {files: [testFormat]}});
